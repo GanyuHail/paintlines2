@@ -13,9 +13,11 @@ const far = 500;
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 camera.position.z = 80;
 
-const canvas = document.getElementById('myThreeJsCanvas')
+container = document.createElement('div');
+document.body.appendChild(container);
+
 const renderer = new THREE.WebGLRenderer({
-    canvas, antialias: true
+    container, antialias: true
 });
 
 window.addEventListener('resize', onWindowResize, false);
