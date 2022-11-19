@@ -4,6 +4,7 @@ import { OrbitControls } from 'https://unpkg.com/three@0.146.0/examples/jsm/cont
 
 const scene = new THREE.Scene();
 
+let container;
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
 const fov = 75;
@@ -24,7 +25,7 @@ window.addEventListener('resize', onWindowResize, false);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-document.body.appendChild(VRButton.createButton(renderer));
+//document.body.appendChild(VRButton.createButton(renderer));
 
 // Lights
 
