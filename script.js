@@ -1,12 +1,10 @@
-
 import * as THREE from 'three';
 import { OrbitControls } from 'https://unpkg.com/three@0.146.0/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
 
 let container;
-let windowHalfX = window.innerWidth / 2;
-let windowHalfY = window.innerHeight / 2;
+
 const fov = 75;
 const aspect = window.innerWidth / window.innerHeight;
 const near = 0.1;
@@ -18,8 +16,15 @@ container = document.createElement('div');
 document.body.appendChild(container);
 
 const renderer = new THREE.WebGLRenderer({
-    container, antialias: true
+    container,
+    antialias: true,
+    clearAlpha: 1,
+    sortObjects: false,
+    sortElements: false
 });
+
+var lineHolder = new THREE.Object3D();
+scene.add(lineHolder);
 
 window.addEventListener('resize', onWindowResize, false);
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -29,75 +34,126 @@ document.body.appendChild(renderer.domElement);
 
 // Lights
 
-const ambientLight = new THREE.AmbientLight(0xFFC0CB, 1);
-ambientLight.castShadow = true;
-ambientLight.physicallyCorrectLights = true;
-scene.add(ambientLight);
+// const ambientLight = new THREE.AmbientLight(0xFFC0CB, 1);
+// ambientLight.castShadow = true;
+// ambientLight.physicallyCorrectLights = true;
+// scene.add(ambientLight);
 
-const spotLight = new THREE.SpotLight(0xffffff, 2);
-spotLight.castShadow = true;
-spotLight.position.set(12, 64, 32);
-spotLight.physicallyCorrectLights = true;
-scene.add(spotLight);
+// const spotLight = new THREE.SpotLight(0xffffff, 2);
+// spotLight.castShadow = true;
+// spotLight.position.set(12, 64, 32);
+// spotLight.physicallyCorrectLights = true;
+// scene.add(spotLight);
+
+scene.add(new THREE.HemisphereLight(0x808080, 0x606060));
+
+const light = new THREE.DirectionalLight(0xffffff);
+light.position.set(3, 6, 0);
+light.castShadow = true;
+light.shadow.camera.top = 2;
+light.shadow.camera.bottom = - 2;
+light.shadow.camera.right = 2;
+light.shadow.camera.left = - 2;
+light.shadow.mapSize.set(4096, 4096);
+scene.add(light);
 
 // Painting
 
-const paintGeometry = new THREE.BoxGeometry(50, 50, 1);
-paintGeometry.antialias = true;
-const paintTexture = new THREE.TextureLoader().load('https://raw.githubusercontent.com/GanyuHail/nb/main/src/weOpMin.jpg');
-const paintMaterial = new THREE.MeshBasicMaterial({ map: paintTexture });
-paintMaterial.metalness = 0.5;
-paintMaterial.roughness = 1;
-const paintMesh = new THREE.Mesh(paintGeometry, paintMaterial);
-scene.add(paintMesh);
+// const paintGeometry = new THREE.BoxGeometry(50, 50, 1);
+// paintGeometry.antialias = true;
+// const paintTexture = new THREE.TextureLoader().load('https://raw.githubusercontent.com/GanyuHail/nb/main/src/weOpMin.jpg');
+// const paintMaterial = new THREE.MeshBasicMaterial({ map: paintTexture });
+// paintMaterial.metalness = 0.5;
+// paintMaterial.roughness = 1;
+// const paintMesh = new THREE.Mesh(paintGeometry, paintMaterial);
+// scene.add(paintMesh);
 
-paintGeometry.userData = { URL: "https://github.com/GanyuHail/nb/blob/main/src/weOpMin.jpg" };
+// paintGeometry.userData = { URL: "https://github.com/GanyuHail/nb/blob/main/src/weOpMin.jpg" };
 
-// Raycaster
+function reader() {
 
-// const raycaster = new THREE.Raycaster();
-// const pointer = new THREE.Vector2();
+    var file = 'https://raw.githubusercontent.com/GanyuHail/lines/main/src/weOpMin.jpg';
+    var fileType = file.type;
+    
+    var reader = new FileReader();
+    reader.onload = function() {
+        onImageLoaded(reader.result);				
+    };
+    
+    reader.readAsDataURL(file);
 
-// window.addEventListener('pointermove', onPointerMove);
-// window.addEventListener('click', onMouseDown);
-// window.addEventListener('touchend', touchEnd);
-// console.log(onMouseDown);
+    inputImage = new Image();
+    inputImage.src = reader;
 
-// function onPointerMove(event) {
-//   if (selectedObject) {
-//     selectedObject.material.color.set('white');
-//     selectedObject = null;
-//   }
+    inputImage.onload = function () {
+        onImageLoaded2();
+    };
+}
 
-//   pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-//   pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+reader();
 
-//   raycaster.setFromCamera(pointer, camera);
-//   const intersects = raycaster.intersectObjects(scene.children, true);
+function onImageLoaded2() {
 
-//   for (let i = 0; i < intersects.length; i++) {
-//     const intersect = intersects[i];
+    // load image into canvas pixels
+    imageWidth = inputImage.width;
+    imageHeight = inputImage.height;
+    canvas = document.createElement('canvas');
+    canvas.width = imageWidth;
+    canvas.height = imageHeight;
+    context = canvas.getContext('2d');
+    context.drawImage(inputImage, 0, 0);
+    pixels = context.getImageData(0, 0, imageWidth, imageHeight).data;
 
-//     if (intersect && intersect.object) {
-//       selectedObject = intersect.object;
-//       intersect.object.material.color.set('pink');
-//     }
-//   }
-// };
+    createLines();
+}
 
-// function onMouseDown(event) {
-//   if (selectedObject) {
-//     window.location.href = "/nb/page2.html";
-//   }
-// };
+function createLines() {
 
-// function touchEnd(event) {
-//   if (selectedObject) {
-//     window.location.href = "/nb/page2.html";
-//   }
-// };
+    container.appendChild(renderer.domElement);
+
+    var x = 0, y = 0;
+
+    if (lineGroup)
+        scene.removeObject(lineGroup);
+
+    lineGroup = new THREE.Object3D();
+
+    material = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        opacity: 2,
+        linewidth: 2,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+        vertexColors: true
+    });
+
+    // go through the image pixels
+    for (y = 0; y < imageHeight; y += 5) {
+        var geometry = new THREE.Geometry();
+        for (x = 0; x < imageWidth; x += 5) {
+            var color = new THREE.Color(getColor(x, y));
+            var brightness = getBrightness(color);
+            var posn = new THREE.Vector3(x - imageWidth / 2, y - imageHeight / 2, -brightness * 100 + 100 / 2);
+            geometry.vertices.push(new THREE.Vertex(posn));
+            geometry.colors.push(color);
+        }
+        //add a line
+        var line = new THREE.Line(geometry, material);
+        lineGroup.addChild(line);
+    }
+
+    lineHolder.addChild(lineGroup);
+}
 
 function render() {
+
+    // lineHolder.scale = new THREE.Vector3(2,2,2);
+
+    // var xrot = mouseX/_stageWidth * Math.PI*2 + Math.PI;
+    // var yrot = mouseY/_stageHeight* Math.PI*2 + Math.PI;
+
+    // lineHolder.rotation.x += (-yrot - lineHolder.rotation.x) * 0.3;
+    // lineHolder.rotation.y += (xrot - lineHolder.rotation.y) * 0.3;
 
     renderer.render(scene, camera);
 };
