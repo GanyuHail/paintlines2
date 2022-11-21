@@ -4,6 +4,9 @@ import { OrbitControls } from 'https://unpkg.com/three@0.146.0/examples/jsm/cont
 const scene = new THREE.Scene();
 
 let container;
+let windowHalfX = window.innerWidth / 2;
+let windowHalfY = window.innerHeight / 2;
+let inputImage;
 
 const fov = 75;
 const aspect = window.innerWidth / window.innerHeight;
@@ -68,33 +71,27 @@ scene.add(light);
 // const paintMesh = new THREE.Mesh(paintGeometry, paintMaterial);
 // scene.add(paintMesh);
 
-// paintGeometry.userData = { URL: "https://github.com/GanyuHail/nb/blob/main/src/weOpMin.jpg" };
-
-function reader() {
-
-    var file = 'https://raw.githubusercontent.com/GanyuHail/lines/main/src/weOpMin.jpg';
-    var fileType = file.type;
-    
-    var reader = new FileReader();
-    reader.onload = function() {
-        onImageLoaded(reader.result);				
+function readImage(path) {
+    var reader = new THREE.FileLoader();
+    reader.load('https://raw.githubusercontent.com/GanyuHail/paintlines/main/src/weOpMin.jpg');
+    reader.onload = function (event) {
+        onImageLoaded(reader.result);
     };
-    
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(this.files[0]);
+}
+readImage;
+
+function onImageLoaded(path) {
 
     inputImage = new Image();
-    inputImage.src = reader;
+    inputImage.src = path;
 
     inputImage.onload = function () {
-        onImageLoaded2();
+        lines();
     };
 }
 
-reader();
-
-function onImageLoaded2() {
-
-    // load image into canvas pixels
+function lines(image) {
     imageWidth = inputImage.width;
     imageHeight = inputImage.height;
     canvas = document.createElement('canvas');
