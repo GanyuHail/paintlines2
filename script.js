@@ -7,6 +7,11 @@ let container;
 let windowHalfX = window.innerWidth / 2;
 let windowHalfY = window.innerHeight / 2;
 let inputImage;
+let imageWidth,
+imageHeight,
+canvas,
+context;
+THREE.Cache.enabled = true;
 
 const fov = 75;
 const aspect = window.innerWidth / window.innerHeight;
@@ -71,25 +76,51 @@ scene.add(light);
 // const paintMesh = new THREE.Mesh(paintGeometry, paintMaterial);
 // scene.add(paintMesh);
 
-function readImage(path) {
-    var reader = new THREE.FileLoader();
-    reader.load('https://raw.githubusercontent.com/GanyuHail/paintlines/main/src/weOpMin.jpg');
-    reader.onload = function (event) {
-        onImageLoaded(reader.result);
-    };
-    reader.readAsDataURL(this.files[0]);
+// function readImage(loader) {
+
+//     var loader = new THREE.FileLoader();
+//     loader.load('https://raw.githubusercontent.com/GanyuHail/paintlines/main/src/weOpMin.jpg',
+//     function ( data ) {
+// 		// output the text to the console
+// 		console.log( data )
+// 	},
+
+// 	// onError callback
+// 	function ( err ) {
+// 		console.error( 'An error happened' );
+// 	});
+
+//     // loader.onload = function (event) {
+//     //     onImageLoaded(loader.result);
+//     // };
+//     // loader.readAsDataURL(loader.result);
+//     // console.log(loader.result);
+//     // console.log(loader);
+// };
+
+// // readImage;
+// // console.log(readImage(loader));
+
+loadImage();
+
+function loadImage() {
+	inputImage = new Image();
+	inputImage.src = ("https://raw.githubusercontent.com/GanyuHail/paintlines/main/src/weOpMin.jpg");
+
+	inputImage.onload = function() {
+		lines();
+	};
 }
-readImage;
 
-function onImageLoaded(path) {
+// function onImageLoaded2() {
 
-    inputImage = new Image();
-    inputImage.src = path;
+//     readImage = new Image();
+//     readImage.src = loader;
 
-    inputImage.onload = function () {
-        lines();
-    };
-}
+//     readImage.onload = function () {
+//         lines();
+//     };
+// }
 
 function lines(image) {
     imageWidth = inputImage.width;
@@ -107,7 +138,6 @@ function lines(image) {
 function createLines() {
 
     container.appendChild(renderer.domElement);
-
     var x = 0, y = 0;
 
     if (lineGroup)
