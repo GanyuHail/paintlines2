@@ -3,14 +3,18 @@ import { OrbitControls } from 'https://unpkg.com/three@0.146.0/examples/jsm/cont
 
 const scene = new THREE.Scene();
 
-let container;
-let windowHalfX = window.innerWidth / 2;
-let windowHalfY = window.innerHeight / 2;
-let inputImage;
-let imageWidth,
+var container,
+lineGroup,
+windowHalfX = window.innerWidth / 2,
+windowHalfY = window.innerHeight / 2,
+inputImage,
+imageWidth,
 imageHeight,
 canvas,
-context;
+context,
+material,
+
+pixels;
 THREE.Cache.enabled = true;
 
 const fov = 75;
@@ -105,7 +109,7 @@ loadImage();
 
 function loadImage() {
 	inputImage = new Image();
-	inputImage.src = ("https://raw.githubusercontent.com/GanyuHail/paintlines/main/src/weOpMin.jpg");
+	inputImage.src = ("/src/weOpMin.jpg");
 
 	inputImage.onload = function() {
 		lines();
@@ -146,7 +150,7 @@ function createLines() {
     lineGroup = new THREE.Object3D();
 
     material = new THREE.LineBasicMaterial({
-        color: 0xffffff,
+        color: 'red',
         opacity: 2,
         linewidth: 2,
         blending: THREE.AdditiveBlending,
@@ -156,20 +160,26 @@ function createLines() {
 
     // go through the image pixels
     for (y = 0; y < imageHeight; y += 5) {
-        var geometry = new THREE.Geometry();
+        var geometry = new THREE.BufferGeometry();
+        var points = [];
         for (x = 0; x < imageWidth; x += 5) {
             var color = new THREE.Color(getColor(x, y));
             var brightness = getBrightness(color);
             var posn = new THREE.Vector3(x - imageWidth / 2, y - imageHeight / 2, -brightness * 100 + 100 / 2);
-            geometry.vertices.push(new THREE.Vertex(posn));
-            geometry.colors.push(color);
+            // console.log(posn);=
+            points.push(posn);
+            //geometry.colors.push(color);
         }
+        geometry.setFromPoints(points);
         //add a line
         var line = new THREE.Line(geometry, material);
-        lineGroup.addChild(line);
+        lineGroup.add(line);
+        // scene.add(line)
     }
 
-    lineHolder.addChild(lineGroup);
+    console.log(scene)
+
+    lineHolder.add(lineGroup);
 }
 
 function render() {
@@ -185,6 +195,7 @@ function render() {
     renderer.render(scene, camera);
 };
 
+setTimeout(() => {window.requestAnimationFrame(render); console.log('here')}, 2000)
 window.requestAnimationFrame(render);
 
 // Orbit Controls 
@@ -201,6 +212,22 @@ animate();
 renderer.setAnimationLoop(function () {
     renderer.render(scene, camera);
 });
+
+function getColor(x, y) {
+	var base = (Math.floor(y) * imageWidth + Math.floor(x)) * 4;
+	var c = {
+		r: pixels[base + 0],
+		g: pixels[base + 1],
+		b: pixels[base + 2],
+		a: pixels[base + 3]
+	};
+	// return (c.r << 16) + (c.g << 8) + c.b;
+    return 'rgb(250, 0,0)';
+};
+
+function getBrightness(c) {
+	return ( 0.34 * c.r + 0.5 * c.g + 0.16 * c.b );
+};
 
 // Resize
 
