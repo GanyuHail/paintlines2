@@ -117,6 +117,11 @@ $(document).ready( function() {
 	$("#loadSample").click( function() {
 		loadSample();
 	});
+
+	$("#loadLogo").click( function() {
+		loadLogo();
+	});
+
 	//init mouse listeners
 	$("#stage").mousemove( onMouseMove);
 	$(window).mousewheel( onMouseWheel);
@@ -372,6 +377,15 @@ function getBrightness(c) {
 function loadSample() {
 	_inputImage = new Image();
 	_inputImage.src = ("img/vermeer.jpg");
+
+	_inputImage.onload = function() {
+		onImageLoaded2();
+	};
+}
+
+function loadLogo() {
+	_inputImage = new Image();
+	_inputImage.src = ("img/logo.png");
 
 	_inputImage.onload = function() {
 		onImageLoaded2();
