@@ -114,13 +114,7 @@ $(document).ready( function() {
 	};
 	_stage = document.getElementById("stage");
 
-	$("#loadSample").click( function() {
-		loadSample();
-	});
-
-	$("#loadLogo").click( function() {
-		loadLogo();
-	});
+	loadLogo();
 
 	//init mouse listeners
 	$("#stage").mousemove( onMouseMove);
