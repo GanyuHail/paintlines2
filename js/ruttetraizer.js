@@ -34,7 +34,7 @@ _guiOptions  = {
 	lineThickness:	1.7,
 	opacity: 		1.0,
 	depth: 			61,
-	autoRotate: 	true
+	autoRotate: 	false
 };
 
 function saveImage() {
@@ -65,7 +65,7 @@ function saveImage() {
 // Init GUI
 DAT.GUI.autoPlace = false;
 var _gui = new DAT.GUI();
-document.getElementById('controls-container').appendChild( _gui.domElement );
+// document.getElementById('controls-container').appendChild( _gui.domElement );
 
 //_gui = new DAT.GUI();
 _gui.add(_guiOptions, 'scale', 0.1, 10,0.1).listen().name('Scale');
@@ -315,11 +315,11 @@ function doLayout() {
 	//get dims
 	winHeight = window.innerHeight ? window.innerHeight : $(window).height();
 	winWidth = window.innerWidth ? window.innerWidth : $(window).width();
-	controlsWidth = $('#controls').outerWidth();
+	// controlsWidth = $('#controls').outerWidth();
 
 	//set container size
 	$('#container').height(parseInt(winHeight));
-	$('#container').width(parseInt(winWidth) - parseInt(controlsWidth));
+	$('#container').width(parseInt(winWidth));
 	containerWidth = $('#container').outerWidth();
 
 	//set stage size as fraction of window size
@@ -335,7 +335,7 @@ function doLayout() {
 
 	//Center stage div inside window
 	$('#stage').css({
-		left: Math.max((containerWidth - _stageWidth)/2 + controlsWidth,controlsWidth),
+		left: Math.max((containerWidth - _stageWidth)/2 + 0,0),
 		top: (winHeight -_stageHeight)/2,
 		visibility:"visible"
 	});
