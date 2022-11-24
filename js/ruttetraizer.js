@@ -30,11 +30,11 @@ _enableMouseMove = false,
 _guiOptions  = {
 	stageSize:	 	1,
 	scale:	 		2.0,
-	scanStep: 		5,
-	lineThickness:	3.0,
+	scanStep: 		2,
+	lineThickness:	1.7,
 	opacity: 		1.0,
-	depth: 			100,
-	autoRotate: 	false
+	depth: 			61,
+	autoRotate: 	true
 };
 
 function saveImage() {
