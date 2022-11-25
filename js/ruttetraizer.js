@@ -259,7 +259,7 @@ function onKeyDown(evt) {
 }
 
 document.addEventListener("touchstart", onDocumentTouchStart, false);
-document.addEventListener("touchmove", onDocumentTouchMove, false);
+document.addEventListener("touchmove", onTouchMove, false);
 
 function onDocumentTouchStart(e) {
     if (e.touches.length === 1) {
