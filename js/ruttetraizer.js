@@ -1,41 +1,36 @@
-/**
- * RuttEtraIzer by Felix Turner
- * www.airtight.cc
- */
-
 //VARS
 var _stage,
-_lineGroup,
-_lineHolder,
-_stats,
-_camera,
-_scene,
-_renderer,
-_mouseX = 0,
-_mouseY = 0,
-_material,
-_gui,
-_inputImage,
-_stageCenterX,
-_stageCenterY,
-_canvas,
-_context,
-_imageWidth,
-_imageHeight,
-_stageWidth,
-_stageHeight,
-_enableMouseMove = false,
+	_lineGroup,
+	_lineHolder,
+	_stats,
+	_camera,
+	_scene,
+	_renderer,
+	_mouseX = 0,
+	_mouseY = 0,
+	_material,
+	_gui,
+	_inputImage,
+	_stageCenterX,
+	_stageCenterY,
+	_canvas,
+	_context,
+	_imageWidth,
+	_imageHeight,
+	_stageWidth,
+	_stageHeight,
+	_enableMouseMove = false,
 
-//VARS ACCESSIBLE BY GUI
-_guiOptions  = {
-	stageSize:	 	1,
-	scale:	 		2.0,
-	scanStep: 		2,
-	lineThickness:	1.7,
-	opacity: 		1.0,
-	depth: 			61,
-	autoRotate: 	false
-};
+	//VARS ACCESSIBLE BY GUI
+	_guiOptions = {
+		stageSize: 1,
+		scale: 2.0,
+		scanStep: 2,
+		lineThickness: 1.7,
+		opacity: 1.0,
+		depth: 61,
+		autoRotate: false
+	};
 
 function saveImage() {
 	render();
@@ -43,14 +38,14 @@ function saveImage() {
 
 	console.log(navigator.userAgent);
 
-	var imgData = _renderer.domElement.toDataURL("image/png");    
+	var imgData = _renderer.domElement.toDataURL("image/png");
 
-	if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+	if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
 
 		window.open(imgData);
 
 	} else {
-		
+
 		var now = new Date();
 		var stamp = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + "-" + now.getHours() + "-" + now.getMinutes() + "-" + now.getSeconds();
 		var a = document.createElement('a');
@@ -58,7 +53,6 @@ function saveImage() {
 		a.download = "RuttEtraIzed-" + stamp + ".png";
 		a.click();
 	}
-
 
 }
 
@@ -68,48 +62,24 @@ var _gui = new DAT.GUI();
 // document.getElementById('controls-container').appendChild( _gui.domElement );
 
 //_gui = new DAT.GUI();
-_gui.add(_guiOptions, 'scale', 0.1, 10,0.1).listen().name('Scale');
-_gui.add(_guiOptions, 'scanStep', 1, 20,1).onChange( createLines ).name('Line Separation');
-_gui.add(_guiOptions, 'lineThickness', 0.1, 10,0.1).onChange( updateMaterial ).name('Line Thickness');
-_gui.add(_guiOptions, 'depth', 0, 300,1).onChange( createLines ).name('Max Line Depth');
-_gui.add(_guiOptions, 'opacity', 0, 1,0.1).onChange( updateMaterial ).name('Brightness');
-_gui.add(_guiOptions, 'stageSize',0.2,1,0.1).onChange(doLayout).name('Stage Size');
+_gui.add(_guiOptions, 'scale', 0.1, 10, 0.1).listen().name('Scale');
+_gui.add(_guiOptions, 'scanStep', 1, 20, 1).onChange(createLines).name('Line Separation');
+_gui.add(_guiOptions, 'lineThickness', 0.1, 10, 0.1).onChange(updateMaterial).name('Line Thickness');
+_gui.add(_guiOptions, 'depth', 0, 300, 1).onChange(createLines).name('Max Line Depth');
+_gui.add(_guiOptions, 'opacity', 0, 1, 0.1).onChange(updateMaterial).name('Brightness');
+_gui.add(_guiOptions, 'stageSize', 0.2, 1, 0.1).onChange(doLayout).name('Stage Size');
 _gui.add(this, 'openFileDialog').name('Load Image');
 _gui.add(this, 'saveImage').name('Save Image');
 
 /**
  * Init page
  */
-$(document).ready( function() {
+$(document).ready(function () {
 
 	$(window).bind('resize', doLayout);
 
-	//init image drag and drop
-	if (typeof(FileReader) != "undefined") {
-
-		window.addEventListener('dragover', function(event) {
-			event.preventDefault();
-		}, false);
-		window.addEventListener('drop', function(event) {
-			event.preventDefault();
-
-			var file = event.dataTransfer.files[0];
-			var fileType = file.type;
-			if (!fileType.match(/image\/\w+/)) {
-				alert("Only image files supported.");
-				return;
-			}
-
-			var reader = new FileReader();
-			reader.onload = function() {
-				onImageLoaded(reader.result);				
-			};
-			reader.readAsDataURL(file);
-		}, false);
-	}
-
 	// stop the user getting a text cursor
-	document.onselectstart = function() {
+	document.onselectstart = function () {
 		return false;
 	};
 	_stage = document.getElementById("stage");
@@ -117,13 +87,13 @@ $(document).ready( function() {
 	loadLogo();
 
 	//init mouse listeners
-	$("#stage").mousemove( onMouseMove);
-	$(window).mousewheel( onMouseWheel);
+	$("#stage").mousemove(onMouseMove);
+	$(window).mousewheel(onMouseWheel);
 	$(window).keydown(onKeyDown);
-	$(window).mousedown( function() {
+	$(window).mousedown(function () {
 		_enableMouseMove = true;
 	});
-	$(window).mouseup( function() {
+	$(window).mouseup(function () {
 		_enableMouseMove = false;
 	});
 	//init stats
@@ -148,7 +118,7 @@ $(document).ready( function() {
 function initWebGL() {
 
 	//init camera
-	_camera = new THREE.Camera(75, 16/9, 1, 3000);
+	_camera = new THREE.Camera(75, 16 / 9, 1, 3000);
 	_camera.position.z = -1000;
 	_scene = new THREE.Scene();
 
@@ -164,32 +134,31 @@ function initWebGL() {
 	_scene.addObject(_lineHolder);
 
 	doLayout();
-
 	animate();
 }
 
 function handleFileSelect(evt) {
 
 	var reader = new FileReader();
-	reader.onload = function(event) {
-		onImageLoaded(reader.result);	
+	reader.onload = function (event) {
+		onImageLoaded(reader.result);
 	};
 
 	// this.files[0] comes from input element
 	reader.readAsDataURL(this.files[0]);
 }
 
-function openFileDialog(){
+function openFileDialog() {
 	//cannot open up file dialog directly, need to do it through a hidden input box
-	$("#file-input").change( handleFileSelect, false);
+	$("#file-input").change(handleFileSelect, false);
 	$("#file-input").click();
 }
 
-function loadImage(path){
+function loadImage(path) {
 
 	var reader = new FileReader();
-	reader.onload = function(event) {
-		onImageLoaded(reader.result);	
+	reader.onload = function (event) {
+		onImageLoaded(reader.result);
 	};
 	reader.readAsDataURL(path);
 }
@@ -199,7 +168,7 @@ function onImageLoaded(path) {
 	_inputImage = new Image();
 	_inputImage.src = path;
 
-	_inputImage.onload = function() {
+	_inputImage.onload = function () {
 		onImageLoaded2();
 	};
 }
@@ -209,12 +178,12 @@ function onImageLoaded2() {
 	// load image into canvas pixels
 	_imageWidth = _inputImage.width;
 	_imageHeight = _inputImage.height;
-	_canvas	= document.createElement('canvas');
+	_canvas = document.createElement('canvas');
 	_canvas.width = _imageWidth;
 	_canvas.height = _imageHeight;
 	_context = _canvas.getContext('2d');
 	_context.drawImage(_inputImage, 0, 0);
-	_pixels	= _context.getImageData(0,0,_imageWidth,_imageHeight).data;
+	_pixels = _context.getImageData(0, 0, _imageWidth, _imageHeight).data;
 
 	createLines();
 }
@@ -241,20 +210,20 @@ function createLines() {
 		blending: THREE.AdditiveBlending,
 		depthTest: false,
 		vertexColors: true
-	} );
+	});
 
 	// go through the image pixels
-	for(y = 0; y < _imageHeight; y+= _guiOptions.scanStep) {
+	for (y = 0; y < _imageHeight; y += _guiOptions.scanStep) {
 		var geometry = new THREE.Geometry();
-		for(x = 0; x < _imageWidth ; x+= _guiOptions.scanStep) {
+		for (x = 0; x < _imageWidth; x += _guiOptions.scanStep) {
 			var color = new THREE.Color(getColor(x, y));
 			var brightness = getBrightness(color);
-			var posn = new THREE.Vector3(x -_imageWidth/2,y - _imageHeight/2, -brightness * _guiOptions.depth + _guiOptions.depth/2);
+			var posn = new THREE.Vector3(x - _imageWidth / 2, y - _imageHeight / 2, -brightness * _guiOptions.depth + _guiOptions.depth / 2);
 			geometry.vertices.push(new THREE.Vertex(posn));
 			geometry.colors.push(color);
 		}
 		//add a line
-		var line = new THREE.Line(geometry, _material );
+		var line = new THREE.Line(geometry, _material);
 		_lineGroup.addChild(line);
 	}
 
@@ -275,7 +244,7 @@ function onMouseMove(event) {
 	}
 }
 
-function onMouseWheel(e,delta) {
+function onMouseWheel(e, delta) {
 	_guiOptions.scale += delta * 0.1;
 	//limit
 	_guiOptions.scale = Math.max(_guiOptions.scale, .1);
@@ -297,10 +266,10 @@ function animate() {
 
 function render() {
 
-	_lineHolder.scale = new THREE.Vector3(_guiOptions.scale,_guiOptions.scale, _guiOptions.scale);
+	_lineHolder.scale = new THREE.Vector3(_guiOptions.scale, _guiOptions.scale, _guiOptions.scale);
 
-	var xrot = _mouseX/_stageWidth * Math.PI*2 + Math.PI;
-	var yrot = _mouseY/_stageHeight* Math.PI*2 + Math.PI;
+	var xrot = _mouseX / _stageWidth * Math.PI * 2 + Math.PI;
+	var yrot = _mouseY / _stageHeight * Math.PI * 2 + Math.PI;
 
 	_lineHolder.rotation.x += (-yrot - _lineHolder.rotation.x) * 0.3;
 	_lineHolder.rotation.y += (xrot - _lineHolder.rotation.y) * 0.3;
@@ -335,9 +304,9 @@ function doLayout() {
 
 	//Center stage div inside window
 	$('#stage').css({
-		left: Math.max((containerWidth - _stageWidth)/2 + 0,0),
-		top: (winHeight -_stageHeight)/2,
-		visibility:"visible"
+		left: Math.max((containerWidth - _stageWidth) / 2 + 0, 0),
+		top: (winHeight - _stageHeight) / 2,
+		visibility: "visible"
 	});
 
 	//set webgl size
@@ -347,7 +316,7 @@ function doLayout() {
 		_camera.updateProjectionMatrix();
 	}
 
-	_stageCenterX = $('#stage').offset().left +_stageWidth / 2;
+	_stageCenterX = $('#stage').offset().left + _stageWidth / 2;
 	_stageCenterY = window.innerHeight / 2
 }
 
@@ -365,23 +334,33 @@ function getColor(x, y) {
 
 //return pixel brightness between 0 and 1 based on human perceptual bias
 function getBrightness(c) {
-	return ( 0.34 * c.r + 0.5 * c.g + 0.16 * c.b );
+	return (0.34 * c.r + 0.5 * c.g + 0.16 * c.b);
 };
-
-function loadSample() {
-	_inputImage = new Image();
-	_inputImage.src = ("img/vermeer.jpg");
-
-	_inputImage.onload = function() {
-		onImageLoaded2();
-	};
-}
 
 function loadLogo() {
 	_inputImage = new Image();
 	_inputImage.src = ("img/logo.png");
 
-	_inputImage.onload = function() {
+	_inputImage.onload = function () {
 		onImageLoaded2();
 	};
-}
+};
+
+document.addEventListener("touchstart", onDocumentTouchStart, false);
+document.addEventListener("touchmove", onDocumentTouchMove, false);
+
+function onDocumentTouchStart(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      mouseX = e.touches[0].pageX - windowHalfX;
+      mouseY = e.touches[0].pageY - windowHalfY;
+    }
+  }
+
+  function onDocumentTouchMove(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      mouseX = e.touches[0].pageX - windowHalfX;
+      mouseY = e.touches[0].pageY - windowHalfY;
+    }
+  }
