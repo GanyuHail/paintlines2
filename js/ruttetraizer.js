@@ -24,9 +24,9 @@ var _stage,
 	//VARS ACCESSIBLE BY GUI
 	_guiOptions = {
 		stageSize: 1,
-		scale: 2.0,
+		scale: 1.8,
 		scanStep: 2,
-		lineThickness: 1.7,
+		lineThickness: 1.9,
 		opacity: 1.0,
 		depth: 61,
 		autoRotate: false
@@ -263,7 +263,7 @@ document.addEventListener("touchmove", onDocumentTouchMove, false);
 
 function onDocumentTouchStart(e) {
     if (e.touches.length === 1) {
-      e.preventDefault();
+      //e.preventDefault();
       _mouseX = e.touches[0].pageX - _stageCenterX;
       _mouseY = e.touches[0].pageY - _stageCenterY;
     }
@@ -271,7 +271,7 @@ function onDocumentTouchStart(e) {
 
   function onDocumentTouchMove(e) {
     if (e.touches.length === 1) {
-      e.preventDefault();
+      //e.preventDefault();
       _mouseX = e.touches[0].pageX - _stageCenterX;
       _mouseY = e.touches[0].pageY - _stageCenterY;
     }
@@ -365,13 +365,13 @@ function loadLogo() {
 	};
 };
 
-$(window).resize(function() {
-    var width = $(window).width();
-    if(width < 480)
-    {
-        _guiOptions = {
-			scale: 1.5,
-			lineThickness: 1.7
-		}
-    }
-});
+// $(window).resize(function() {
+//     var width = $(window).width();
+//     if(width < 480)
+//     {
+//         _guiOptions = {
+// 			scale: 1.5,
+// 			lineThickness: 1.7
+// 		}
+//     }
+// });
