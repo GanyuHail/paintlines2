@@ -269,11 +269,11 @@ function onKeyDown(evt) {
 //     }
 //   };
 
-// function animate() {
-// 	requestAnimationFrame(animate);
-// 	render();
-// 	_stats.update();
-// }
+function animate() {
+	requestAnimationFrame(animate);
+	render();
+	_stats.update();
+}
 
 function touchstart( event ) {
 
