@@ -364,3 +364,14 @@ function loadLogo() {
 		onImageLoaded2();
 	};
 };
+
+$(window).resize(function() {
+    var width = $(window).width();
+    if(width < 480)
+    {
+        _guiOptions = {
+			scale: 1.5,
+			lineThickness: 1.7
+		}
+    }
+});
