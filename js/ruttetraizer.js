@@ -358,7 +358,7 @@ function getBrightness(c) {
 
 function loadLogo() {
 	_inputImage = new Image();
-	_inputImage.src = ("img/logo.png");
+	_inputImage.src = ("img/weOpMin.jpg");
 
 	_inputImage.onload = function () {
 		onImageLoaded2();
