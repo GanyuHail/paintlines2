@@ -130,6 +130,8 @@ function initWebGL() {
 		sortElements: false
 	});
 
+	_renderer.setPixelRatio(window.devicePixelRatio);
+
 	_lineHolder = new THREE.Object3D();
 	_scene.addObject(_lineHolder);
 
